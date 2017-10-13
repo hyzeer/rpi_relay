@@ -2,6 +2,13 @@
 <project version="4">
   <component name="PublishConfigData" autoUpload="Always" serverName="ssh://zzq@192.168.2.100:22/usr/bin/python3" autoUploadExternalChanges="true">
     <serverData>
+      <paths name="Copy of project-level server 'ssh://zzq@192.168.2.100:22/usr/bin/python3'">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_554" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="ssh://zzq@192.168.2.100:22/usr/bin/python3">
         <serverdata>
           <mappings>
