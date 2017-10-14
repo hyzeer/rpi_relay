@@ -2,10 +2,13 @@ from flask import Flask,render_template,session
 from flask_wtf import FlaskForm
 from wtforms import SubmitField,IntegerField,DateTimeField
 from flask_bootstrap import Bootstrap
+from gevent import monkey
+from gevent.pywsgi import WSGIServer
 import RPi.GPIO as GPIO
 import time,datetime
 import pydblite
 
+monkey.patch_all()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'rp'
 bootstrap = Bootstrap(app)
@@ -15,7 +18,6 @@ GPIO.setup(12,GPIO.OUT)
 
 db = pydblite.Base(':memory:')
 db.create('state')
-
 
 class Func():
     @staticmethod
@@ -83,13 +85,20 @@ def index():
         loop_close = form.minute_loop_close.data
         while True:
             Func.output(False)
-            time.sleep(loop_open)
+            time.sleep(loop_open*60)
             Func.output(True)
-            time.sleep(loop_close)
-            if db(state='quit')!=[]:
+            time.sleep(loop_close*60)
+            s = db(state='quit')
+            if s!=[]:
+                db.delete(s)
                 break
+
+    if form.exit_loop.data:
+        db.insert(state='quit')
 
     return render_template('index.html',form=form)
 
 if __name__ == '__main__':
-    app.run(port=5000,host='192.168.2.100')
+    #app.run(port=5000,host='192.168.2.100')
+    http_server = WSGIServer(('192.168.2.100',5000),app)
+    http_server.serve_forever()
