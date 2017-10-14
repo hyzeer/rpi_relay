@@ -11,7 +11,7 @@
         {{ form.minute_open.label(class="col-md-5 control-label")}}<div class="col-md-2">{{ form.minute_open(class="form-control") }}</div>
     </div>
     <div class="form-group">
-        {{ form.date_open.label(class="col-md-5 control-label")}}<div class="col-md-2">{{ form.date_open(class="form-control") }}</div>
+        {{ form.date_open.label(class="col-md-5 control-label")}}<div class="col-md-2">{{ form.date_open(class="form-control",placeholder="YYYY-MM-DD HH:MM:SS") }}</div>
     </div>
         <div class="col-md-offset-5 col-md-7">{{form.appointment_opening(class="btn btn-defaut")}}</div>
     <br>
@@ -22,7 +22,7 @@
         {{ form.minute_close.label(class="col-md-5 control-label")}}<div class="col-md-2">{{ form.minute_close(class="form-control") }}</div>
     </div>
     <div class="form-group">
-        {{ form.date_close.label(class="col-md-5 control-label")}}<div class="col-md-2">{{ form.date_close(class="form-control") }}</div>
+        {{ form.date_close.label(class="col-md-5 control-label")}}<div class="col-md-2">{{ form.date_close(class="form-control",placeholder="YYYY-MM-DD HH:MM:SS") }}</div>
     </div>
         <div class="col-md-offset-5 col-md-7">{{form.appointment_closing(class="btn btn-defaut")}}</div>
     <br>
@@ -35,7 +35,7 @@
     <div class="form-group">
         {{ form.minute_loop_close.label(class="col-md-5 control-label")}}<div class="col-md-2">{{ form.minute_loop_close(class="form-control") }}</div>
     </div>
-        <div class="col-md-offset-5 col-md-7">{{form.loop(class="btn btn-defaut")}}</div>
+        <div class="col-md-offset-5 col-md-7">{{form.loop(class="btn btn-defaut")}}{{form.exit_loop(class="btn btn-defaut col-md-offset-1")}}</div>
     <br>
     <br>
     <hr style="width:50%;" \>

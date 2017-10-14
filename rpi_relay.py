@@ -1,9 +1,10 @@
-from flask import Flask,render_template,request
+from flask import Flask,render_template,session
 from flask_wtf import FlaskForm
 from wtforms import SubmitField,IntegerField,DateTimeField
 from flask_bootstrap import Bootstrap
 import RPi.GPIO as GPIO
 import time,datetime
+import pydblite
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'rp'
@@ -11,6 +12,22 @@ bootstrap = Bootstrap(app)
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(12,GPIO.OUT)
+
+db = pydblite.Base(':memory:')
+db.create('state')
+
+
+class Func():
+    @staticmethod
+    def appointment_time_ConvertTo_seconds(appmnt):
+        appointment = datetime.datetime.strptime(str(appmnt), "%Y-%m-%d %H:%M:%S")
+        now = datetime.datetime.now()
+        t = appointment - now
+        return int(t.total_seconds())
+
+    @staticmethod
+    def output(bool):
+        GPIO.output(12, bool)
 
 class SwitchForm(FlaskForm):
     minute_open = IntegerField('分钟')
@@ -24,6 +41,7 @@ class SwitchForm(FlaskForm):
     minute_loop_open = IntegerField('开(分钟)')
     minute_loop_close = IntegerField('关(分钟)')
     loop = SubmitField('循环')
+    exit_loop = SubmitField('退出循环')
 
     on = SubmitField('常开')
     off = SubmitField('常关')
@@ -33,21 +51,44 @@ class SwitchForm(FlaskForm):
 def index():
     form = SwitchForm()
     if form.on.data:
-        GPIO.output(12,False)
+        Func.output(False)
+
     if form.off.data:
-        GPIO.output(12,True)
+        Func.output(True)
+
     if form.appointment_opening.data:
-        minute = form.minute_open.data
-        _datetime = form.date_open.data
-        if minute:
-            time.sleep(minute*60)
-            GPIO.output(12, False)
-        if _datetime:
-            appointment = datetime.datetime.strptime(str(_datetime),"%Y-%m-%d %H:%M:%S")
-            now = datetime.datetime.now()
-            t = appointment - now
-            time.sleep(int(t.total_seconds()))
-            GPIO.output(12, False)
+        open_minute = form.minute_open.data
+        open_datetime = form.date_open.data
+        if open_minute:
+            time.sleep(open_minute*60)
+            Func.output(False)
+        if open_datetime:
+            t = Func.appointment_time_ConvertTo_seconds(open_datetime)
+            time.sleep(t)
+            Func.output(False)
+
+    if form.appointment_closing.data:
+        close_minute = form.minute_close.data
+        close_datetime = form.date_close.data
+        if close_minute:
+            time.sleep(close_minute*60)
+            Func.output(True)
+        if close_datetime:
+            t = Func.appointment_time_ConvertTo_seconds(close_datetime)
+            time.sleep(t)
+            Func.output(True)
+
+    if form.loop.data:
+        loop_open = form.minute_loop_open.data
+        loop_close = form.minute_loop_close.data
+        while True:
+            Func.output(False)
+            time.sleep(loop_open)
+            Func.output(True)
+            time.sleep(loop_close)
+            if db(state='quit')!=[]:
+                break
+
     return render_template('index.html',form=form)
 
 if __name__ == '__main__':
