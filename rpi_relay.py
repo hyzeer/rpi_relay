@@ -18,6 +18,7 @@ GPIO.setup(12,GPIO.OUT)
 
 db = pydblite.Base(':memory:')
 db.create('state')
+state = True
 
 class Func():
     @staticmethod
@@ -83,18 +84,17 @@ def index():
     if form.loop.data:
         loop_open = form.minute_loop_open.data
         loop_close = form.minute_loop_close.data
-        while True:
+        while state:
             Func.output(False)
-            time.sleep(loop_open*60)
+            time.sleep(loop_open)
             Func.output(True)
-            time.sleep(loop_close*60)
-            s = db(state='quit')
-            if s!=[]:
-                db.delete(s)
-                break
+            time.sleep(loop_close)
+        global state
+        state = True
 
     if form.exit_loop.data:
-        db.insert(state='quit')
+        global state
+        state = False
 
     return render_template('index.html',form=form)
 
