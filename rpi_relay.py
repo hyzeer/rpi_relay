@@ -16,8 +16,6 @@ bootstrap = Bootstrap(app)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(12,GPIO.OUT)
 
-db = pydblite.Base(':memory:')
-db.create('state')
 state = True
 
 class Func():
