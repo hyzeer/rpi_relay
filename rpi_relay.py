@@ -6,7 +6,6 @@ from gevent import monkey
 from gevent.pywsgi import WSGIServer
 import RPi.GPIO as GPIO
 import time,datetime
-import pydblite
 
 monkey.patch_all()
 app = Flask(__name__)
